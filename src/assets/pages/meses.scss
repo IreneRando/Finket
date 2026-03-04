@@ -1,0 +1,149 @@
+/* src/assets/pages/meses.scss */
+
+.meses-container {
+  padding: 3rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-dark, #4a4a4a);
+  min-height: 100vh;
+
+  .meses-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+
+    .MuiTypography-h3 {
+      font-size: 2.75rem !important;
+      font-weight: 700 !important;
+      color: var(--text-dark, #4a4a4a);
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+      font-family: inherit;
+    }
+
+    .MuiTypography-subtitle1 {
+      font-size: 1.15rem !important;
+      color: var(--text-muted, #8c8c8c);
+      font-family: inherit;
+      font-weight: 400;
+    }
+  }
+
+  .meses-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+
+    .summary-card {
+      background: var(--card-bg, #ffffff);
+      padding: 2rem 1.5rem;
+      border-radius: 24px;
+      box-shadow: 0 12px 24px var(--card-shadow, rgba(142, 133, 165, 0.08)), 0 4px 8px rgba(0,0,0,0.02);
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--card-border, #f0eef5);
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px var(--card-shadow, rgba(142, 133, 165, 0.08)), 0 8px 16px rgba(0,0,0,0.03);
+      }
+
+      .MuiTypography-overline {
+        font-size: 0.9rem !important;
+        color: var(--text-muted, #8c8c8c);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600 !important;
+        font-family: inherit;
+        z-index: 1;
+        position: relative;
+      }
+
+      .amount {
+        font-size: 2.5rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.03em;
+        font-family: inherit;
+        z-index: 1;
+        position: relative;
+        color: var(--text-dark, #4a4a4a);
+        
+        &.positive { color: var(--pastel-green-text, #50a359); }
+        &.negative { color: var(--pastel-red-text, #d95b5b); }
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        opacity: 0.4;
+        z-index: 0;
+        filter: blur(20px);
+      }
+
+      &.ingresos::before { background: var(--pastel-green-dark, #b8e0bc); }
+      &.gastos::before { background: var(--pastel-red-dark, #f0b9b9); }
+    }
+  }
+
+  .charts-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+
+    .chart-card {
+      background: var(--card-bg, #ffffff);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 12px 24px var(--card-shadow, rgba(142, 133, 165, 0.08));
+      border: 1px solid var(--card-border, #f0eef5);
+
+      .MuiTypography-h5 {
+        font-size: 1.5rem !important;
+        color: var(--text-dark, #4a4a4a);
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px dashed #f0edf5;
+        font-weight: 600 !important;
+        font-family: inherit;
+        text-align: center;
+      }
+
+      .recharts-wrapper {
+        margin: 0 auto;
+      }
+
+      .recharts-tooltip-cursor {
+        fill: rgba(0,0,0,0.02);
+      }
+      
+      .recharts-default-tooltip {
+        border-radius: 12px !important;
+        border: none !important;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.08) !important;
+        background-color: rgba(255,255,255,0.95) !important;
+        padding: 10px 15px !important;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.25rem;
+    
+    .meses-header .MuiTypography-h3 {
+      font-size: 2.25rem !important;
+    }
+
+    .charts-section .chart-card {
+      padding: 1.5rem;
+    }
+  }
+}
