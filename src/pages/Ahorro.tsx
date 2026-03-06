@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "../assets/pages/ahorro.scss";
-import { Box, Typography, Button, Card, CardContent } from "@mui/material";
+import { Box, Typography, Card, CardContent } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 
 export const Ahorro: React.FC = () => {
+  const { t } = useTranslation();
   const [balance] = useState(0);
   const [ingresos] = useState(0);
   const [gastos] = useState(0);
@@ -14,10 +16,10 @@ export const Ahorro: React.FC = () => {
     <Box className="ahorro-container">
       <Box component="header" className="ahorro-header">
         <Typography variant="h3" component="h1" fontWeight="800">
-          Control de Ahorro
+          {t("ahorro.title")}
         </Typography>
         <Typography variant="subtitle1" component="p" color="text.secondary">
-          Gestiona y visualiza el estado actual de tus finanzas
+          {t("ahorro.subtitle")}
         </Typography>
       </Box>
 
@@ -34,7 +36,7 @@ export const Ahorro: React.FC = () => {
               }}
             >
               <AccountBalanceWalletIcon sx={{ fontSize: 18, mr: 1 }} />
-              Balance Total
+              {t("ahorro.totalBalance")}
             </Typography>
             <Typography variant="h3" component="p" className="amount">
               ${balance.toFixed(2)}
@@ -54,7 +56,7 @@ export const Ahorro: React.FC = () => {
               }}
             >
               <TrendingUpIcon sx={{ fontSize: 18, mr: 1 }} />
-              Ingresos
+              {t("ahorro.income")}
             </Typography>
             <Typography variant="h3" component="p" className="amount positive">
               +${ingresos.toFixed(2)}
@@ -74,7 +76,7 @@ export const Ahorro: React.FC = () => {
               }}
             >
               <TrendingDownIcon sx={{ fontSize: 18, mr: 1 }} />
-              Gastos
+              {t("ahorro.expenses")}
             </Typography>
             <Typography variant="h3" component="p" className="amount negative">
               -${gastos.toFixed(2)}
@@ -83,31 +85,12 @@ export const Ahorro: React.FC = () => {
         </Card>
       </Box>
 
-      <Box component="section" className="ahorro-actions">
-        <Button
-          variant="contained"
-          className="btn-add-income"
-          startIcon={<TrendingUpIcon />}
-          disableRipple
-        >
-          Añadir Ingreso
-        </Button>
-        <Button
-          variant="contained"
-          className="btn-add-expense"
-          startIcon={<TrendingDownIcon />}
-          disableRipple
-        >
-          Añadir Gasto
-        </Button>
-      </Box>
-
       <Box component="section" className="ahorro-transactions">
         <Typography variant="h5" component="h2" fontWeight="700">
-          Últimos movimientos
+          {t("ahorro.recentTransactions")}
         </Typography>
         <Box className="transaction-placeholder">
-          <Typography variant="body1">No hay movimientos recientes.</Typography>
+          <Typography variant="body1">{t("ahorro.noTransactions")}</Typography>
         </Box>
       </Box>
     </Box>

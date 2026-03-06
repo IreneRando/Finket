@@ -1,0 +1,65 @@
+{
+  "navbar": {
+    "ahorro": "Savings",
+    "meses": "Months",
+    "viajes": "Trips"
+  },
+  "ahorro": {
+    "title": "Savings Tracker",
+    "subtitle": "Manage and visualize the current state of your finances",
+    "totalBalance": "Total Balance",
+    "income": "Income",
+    "expenses": "Expenses",
+    "addIncome": "Add Income",
+    "addExpense": "Add Expense",
+    "recentTransactions": "Recent Transactions",
+    "noTransactions": "No recent transactions."
+  },
+  "meses": {
+    "title": "Monthly Overview",
+    "subtitle": "Detailed analysis of your income and expenses by category",
+    "selectYear": "Year",
+    "selectMonth": "Month",
+    "addIncome": "Add Income",
+    "addExpense": "Add Expense",
+    "totalIncome": "Total Income",
+    "totalExpense": "Total Expenses",
+    "distribution": "Category Distribution",
+    "modal": {
+      "newIncome": "New Income",
+      "newExpense": "New Expense",
+      "amount": "Amount",
+      "category": "Category",
+      "description": "Description (Optional)",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "categories": {
+      "nomina": "Payroll",
+      "gastos": "Bills",
+      "iphone": "Iphone",
+      "ocio": "Leisure",
+      "comida": "Food",
+      "transporte": "Transport",
+      "caprichos": "Treats/Pharmacy"
+    },
+    "monthNames": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  },
+  "viajes": {
+    "title": "Trip Tracker",
+    "subtitle": "Coming Soon: Budget and expenses for your trips."
+  }
+}

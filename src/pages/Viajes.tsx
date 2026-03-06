@@ -1,7 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography } from "@mui/material";
 
 export const Viajes: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <Box sx={{ padding: "3rem 2rem", textAlign: "center" }}>
       <Typography
@@ -10,10 +13,10 @@ export const Viajes: React.FC = () => {
         color="text.primary"
         gutterBottom
       >
-        Control de Viajes
+        {t("viajes.title")}
       </Typography>
       <Typography variant="subtitle1" color="text.secondary">
-        Próximamente: Presupuesto y gastos de tus viajes.
+        {t("viajes.subtitle")}
       </Typography>
     </Box>
   );

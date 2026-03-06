@@ -1,0 +1,65 @@
+{
+  "navbar": {
+    "ahorro": "Ahorro",
+    "meses": "Meses",
+    "viajes": "Viajes"
+  },
+  "ahorro": {
+    "title": "Control de Ahorro",
+    "subtitle": "Gestiona y visualiza el estado actual de tus finanzas",
+    "totalBalance": "Balance Total",
+    "income": "Ingresos",
+    "expenses": "Gastos",
+    "addIncome": "Añadir Ingreso",
+    "addExpense": "Añadir Gasto",
+    "recentTransactions": "Últimos movimientos",
+    "noTransactions": "No hay movimientos recientes."
+  },
+  "meses": {
+    "title": "Visiograma Mensual",
+    "subtitle": "Análisis detallado de tus ingresos y gastos por categoría",
+    "selectYear": "Año",
+    "selectMonth": "Mes",
+    "addIncome": "Añadir Ingreso",
+    "addExpense": "Añadir Gasto",
+    "totalIncome": "Total Ingresos",
+    "totalExpense": "Total Gastos",
+    "distribution": "Distribución por Categorías",
+    "modal": {
+      "newIncome": "Nuevo Ingreso",
+      "newExpense": "Nuevo Gasto",
+      "amount": "Cantidad",
+      "category": "Categoría",
+      "description": "Descripción (Opcional)",
+      "cancel": "Cancelar",
+      "save": "Guardar"
+    },
+    "categories": {
+      "nomina": "Nómina",
+      "gastos": "Gastos",
+      "iphone": "Iphone",
+      "ocio": "Ocio",
+      "comida": "Comida",
+      "transporte": "Transporte",
+      "caprichos": "Caprichos/Parafarmacia"
+    },
+    "monthNames": {
+      "1": "Enero",
+      "2": "Febrero",
+      "3": "Marzo",
+      "4": "Abril",
+      "5": "Mayo",
+      "6": "Junio",
+      "7": "Julio",
+      "8": "Agosto",
+      "9": "Septiembre",
+      "10": "Octubre",
+      "11": "Noviembre",
+      "12": "Diciembre"
+    }
+  },
+  "viajes": {
+    "title": "Control de Viajes",
+    "subtitle": "Próximamente: Presupuesto y gastos de tus viajes."
+  }
+}

@@ -1,11 +1,18 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "../assets/components/navbar.scss";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
 export const Navbar: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === "es-ES" ? "en-GB" : "es-ES");
+  };
+
   return (
     <nav className="navbar-container">
       <div className="navbar-content">
@@ -21,7 +28,7 @@ export const Navbar: React.FC = () => {
               }
             >
               <AccountBalanceWalletIcon className="nav-icon" />
-              <span>Ahorro</span>
+              <span>{t("navbar.ahorro")}</span>
             </NavLink>
           </li>
           <li>
@@ -32,7 +39,7 @@ export const Navbar: React.FC = () => {
               }
             >
               <CalendarMonthIcon className="nav-icon" />
-              <span>Meses</span>
+              <span>{t("navbar.meses")}</span>
             </NavLink>
           </li>
           <li>
@@ -43,8 +50,21 @@ export const Navbar: React.FC = () => {
               }
             >
               <FlightTakeoffIcon className="nav-icon" />
-              <span>Viajes</span>
+              <span>{t("navbar.viajes")}</span>
             </NavLink>
+          </li>
+          <li>
+            <div
+              className="nav-link"
+              onClick={toggleLanguage}
+              style={{
+                cursor: "pointer",
+                background: "var(--card-border)",
+                marginLeft: "1rem",
+              }}
+            >
+              <span>{i18n.language === "es-ES" ? "EN" : "ES"}</span>
+            </div>
           </li>
         </ul>
       </div>
