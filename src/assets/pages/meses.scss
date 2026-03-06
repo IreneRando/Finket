@@ -29,6 +29,72 @@
     }
   }
 
+  .meses-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+
+    .filter-select {
+      min-width: 150px;
+      
+      .MuiInputBase-root {
+        border-radius: 12px;
+        background-color: var(--card-bg, #ffffff);
+        font-family: inherit;
+      }
+      .MuiSelect-select {
+        padding: 0.8rem 1.2rem;
+      }
+    }
+  }
+
+  .meses-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+
+    button {
+      padding: 0.85rem 2.2rem !important;
+      border-radius: 16px !important;
+      font-size: 1.05rem !important;
+      font-weight: 600 !important;
+      font-family: inherit !important;
+      text-transform: none !important;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04) !important;
+      transition: all 0.3s ease !important;
+
+      &.btn-add-income {
+        background-color: var(--pastel-green-light, #eaf5eb) !important;
+        color: var(--pastel-green-text, #50a359) !important;
+        border: 1px solid var(--pastel-green-dark, #b8e0bc) !important;
+
+        .MuiSvgIcon-root { color: var(--pastel-green-text, #50a359); }
+
+        &:hover {
+          background-color: #d8eedb !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(80, 163, 89, 0.1) !important;
+        }
+      }
+
+      &.btn-add-expense {
+        background-color: var(--pastel-red-light, #fae6e6) !important;
+        color: var(--pastel-red-text, #d95b5b) !important;
+        border: 1px solid var(--pastel-red-dark, #f0b9b9) !important;
+
+        .MuiSvgIcon-root { color: var(--pastel-red-text, #d95b5b); }
+
+        &:hover {
+          background-color: #f7d7d7 !important;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(217, 91, 91, 0.1) !important;
+        }
+      }
+    }
+  }
+
   .meses-summary {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
