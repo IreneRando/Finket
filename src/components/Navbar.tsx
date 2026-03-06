@@ -9,10 +9,6 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 export const Navbar: React.FC = () => {
   const { t, i18n } = useTranslation();
 
-  const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === "es-ES" ? "en-GB" : "es-ES");
-  };
-
   return (
     <nav className="navbar-container">
       <div className="navbar-content">
@@ -54,16 +50,20 @@ export const Navbar: React.FC = () => {
             </NavLink>
           </li>
           <li>
-            <div
-              className="nav-link"
-              onClick={toggleLanguage}
-              style={{
-                cursor: "pointer",
-                background: "var(--card-border)",
-                marginLeft: "1rem",
-              }}
-            >
-              <span>{i18n.language === "es-ES" ? "EN" : "ES"}</span>
+            <div className="nav-lang-toggle">
+              <span
+                className={i18n.language === "es-ES" ? "lang active" : "lang"}
+                onClick={() => i18n.changeLanguage("es-ES")}
+              >
+                ES
+              </span>
+              <span className="separator">|</span>
+              <span
+                className={i18n.language === "en-GB" ? "lang active" : "lang"}
+                onClick={() => i18n.changeLanguage("en-GB")}
+              >
+                EN
+              </span>
             </div>
           </li>
         </ul>

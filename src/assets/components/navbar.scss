@@ -69,6 +69,38 @@
             }
           }
         }
+
+        .nav-lang-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-left: 1rem;
+          padding: 0.5rem 1rem;
+          background: var(--bg-color, #faf9f6);
+          border-radius: 9999px;
+          border: 1px solid var(--card-border, #f0eef5);
+
+          .lang {
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted, #8c8c8c);
+            transition: color 0.2s ease;
+
+            &:hover {
+              color: var(--text-dark, #4a4a4a);
+            }
+
+            &.active {
+              color: var(--pastel-blue-text, #4b88d1);
+            }
+          }
+
+          .separator {
+            color: var(--card-border, #f0eef5);
+            font-size: 0.85rem;
+          }
+        }
       }
     }
   }
