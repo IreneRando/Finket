@@ -300,7 +300,9 @@ export const Meses: React.FC = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => `$${value.toFixed(2)}`}
+                  formatter={(value: number | undefined) =>
+                    `$${(value || 0).toFixed(2)}`
+                  }
                   contentStyle={{
                     borderRadius: "12px",
                     border: "none",
