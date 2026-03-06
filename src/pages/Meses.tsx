@@ -194,7 +194,7 @@ export const Meses: React.FC = () => {
             onChange={(e) => setAmount(e.target.value)}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
+                <InputAdornment position="start">€</InputAdornment>
               ),
             }}
           />
@@ -264,7 +264,7 @@ export const Meses: React.FC = () => {
             {t("meses.totalIncome")}
           </Typography>
           <Typography variant="h3" component="p" className="amount positive">
-            +${ingresosTotal.toFixed(2)}
+            +€{ingresosTotal.toFixed(2)}
           </Typography>
         </Box>
         <Box className="summary-card gastos">
@@ -272,7 +272,7 @@ export const Meses: React.FC = () => {
             {t("meses.totalExpense")}
           </Typography>
           <Typography variant="h3" component="p" className="amount negative">
-            -${gastosTotal.toFixed(2)}
+            -€{gastosTotal.toFixed(2)}
           </Typography>
         </Box>
       </Box>
@@ -301,7 +301,7 @@ export const Meses: React.FC = () => {
                 </Pie>
                 <Tooltip
                   formatter={(value: number | undefined) =>
-                    `$${(value || 0).toFixed(2)}`
+                    `€${(value || 0).toFixed(2)}`
                   }
                   contentStyle={{
                     borderRadius: "12px",

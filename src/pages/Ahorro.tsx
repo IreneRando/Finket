@@ -39,7 +39,7 @@ export const Ahorro: React.FC = () => {
               {t("ahorro.totalBalance")}
             </Typography>
             <Typography variant="h3" component="p" className="amount">
-              ${balance.toFixed(2)}
+              €{balance.toFixed(2)}
             </Typography>
           </CardContent>
         </Card>
@@ -59,7 +59,7 @@ export const Ahorro: React.FC = () => {
               {t("ahorro.income")}
             </Typography>
             <Typography variant="h3" component="p" className="amount positive">
-              +${ingresos.toFixed(2)}
+              +€{ingresos.toFixed(2)}
             </Typography>
           </CardContent>
         </Card>
@@ -79,7 +79,7 @@ export const Ahorro: React.FC = () => {
               {t("ahorro.expenses")}
             </Typography>
             <Typography variant="h3" component="p" className="amount negative">
-              -${gastos.toFixed(2)}
+              -€{gastos.toFixed(2)}
             </Typography>
           </CardContent>
         </Card>
