@@ -29,23 +29,49 @@
     }
   }
 
-  .meses-filters {
+  .meses-tabs-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
     margin-bottom: 3rem;
+    width: 100%;
 
-    .filter-select {
-      min-width: 150px;
-      
-      .MuiInputBase-root {
-        border-radius: 12px;
-        background-color: var(--card-bg, #ffffff);
+    .MuiTabs-root {
+      background: var(--card-bg, #ffffff);
+      border-radius: 9999px;
+      padding: 0.3rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      min-height: 48px;
+
+      .MuiTabs-indicator {
+        height: 100%;
+        border-radius: 9999px;
+        background-color: var(--pastel-blue-light, #e6f0fa);
+        z-index: 0;
+      }
+
+      .MuiTab-root {
+        z-index: 1;
+        text-transform: none;
         font-family: inherit;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: var(--text-muted, #8c8c8c);
+        min-height: 40px;
+        min-width: 80px;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
+
+        &.Mui-selected {
+          color: var(--pastel-blue-text, #4b88d1);
+          font-weight: 700;
+        }
       }
-      .MuiSelect-select {
-        padding: 0.8rem 1.2rem;
-      }
+    }
+
+    .month-tabs .MuiTab-root {
+      min-width: 100px;
     }
   }
 

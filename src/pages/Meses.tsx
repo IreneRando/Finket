@@ -4,10 +4,18 @@ import {
   Box,
   Typography,
   Button,
+  Tabs,
+  Tab,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -23,13 +31,13 @@ import {
 import "../assets/pages/meses.scss";
 
 const rawData = [
-  { key: "nomina", value: 2500, color: "#b8e0bc" }, // pastel green
-  { key: "gastos", value: 400, color: "#f0b9b9" }, // pastel red
-  { key: "iphone", value: 150, color: "#a8cbf0" }, // pastel blue
-  { key: "ocio", value: 200, color: "#faddc0" }, // pastel orange
-  { key: "comida", value: 350, color: "#eadaf5" }, // pastel purple
-  { key: "transporte", value: 80, color: "#f5f1da" }, // pastel yellow
-  { key: "caprichos", value: 120, color: "#f5dae7" }, // pastel pink
+  { key: "nomina", value: 2500, color: "#b8e0bc" },
+  { key: "gastos", value: 400, color: "#f0b9b9" },
+  { key: "iphone", value: 150, color: "#a8cbf0" },
+  { key: "ocio", value: 200, color: "#faddc0" },
+  { key: "comida", value: 350, color: "#eadaf5" },
+  { key: "transporte", value: 80, color: "#f5f1da" },
+  { key: "caprichos", value: 120, color: "#f5dae7" },
 ];
 
 export const Meses: React.FC = () => {
@@ -38,34 +46,65 @@ export const Meses: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
-  const [selectedYear, setSelectedYear] = useState<string>(
-    currentYear.toString(),
+  // Estado para Tabs
+  const [selectedYearIndex, setSelectedYearIndex] = useState(0);
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(
+    currentMonth - 1,
   );
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    currentMonth.toString(),
-  );
+
+  // Generamos los años (ej: 2026, 2025, 2024...)
+  const years = Array.from(new Array(5), (_, index) => currentYear - index);
+  const months = Array.from(new Array(12), (_, index) => index + 1);
+
+  // Estados modales
+  const [openIncomeModal, setOpenIncomeModal] = useState(false);
+  const [openExpenseModal, setOpenExpenseModal] = useState(false);
+
+  // Estado del formulario
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
 
   const data = rawData.map((item) => ({
     ...item,
     name: t(`meses.categories.${item.key}`),
   }));
 
-  // Calculamos el total de ingresos y gastos de forma simple para el resumen
   const ingresosTotal = data.find((d) => d.key === "nomina")?.value || 0;
   const gastosTotal = data
     .filter((d) => d.key !== "nomina")
     .reduce((acc, curr) => acc + curr.value, 0);
 
-  const handleYearChange = (event: SelectChangeEvent) => {
-    setSelectedYear(event.target.value as string);
+  const handleYearTabChange = (
+    event: React.SyntheticEvent,
+    newValue: number,
+  ) => {
+    setSelectedYearIndex(newValue);
   };
 
-  const handleMonthChange = (event: SelectChangeEvent) => {
-    setSelectedMonth(event.target.value as string);
+  const handleMonthTabChange = (
+    event: React.SyntheticEvent,
+    newValue: number,
+  ) => {
+    setSelectedMonthIndex(newValue);
   };
 
-  const years = Array.from(new Array(5), (_, index) => currentYear - index);
-  const months = Array.from(new Array(12), (_, index) => index + 1);
+  const resetForm = () => {
+    setAmount("");
+    setCategory("");
+    setDescription("");
+  };
+
+  const handleCloseModals = () => {
+    setOpenIncomeModal(false);
+    setOpenExpenseModal(false);
+    resetForm();
+  };
+
+  const handleSave = () => {
+    // Aquí iría la lógica de guardado
+    handleCloseModals();
+  };
 
   return (
     <Box className="meses-container">
@@ -78,53 +117,39 @@ export const Meses: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Selectores de Fecha */}
-      <Box className="meses-filters">
-        <FormControl variant="outlined" className="filter-select">
-          <InputLabel id="year-select-label">
-            {t("meses.selectYear")}
-          </InputLabel>
-          <Select
-            labelId="year-select-label"
-            id="year-select"
-            value={selectedYear}
-            onChange={handleYearChange}
-            label={t("meses.selectYear")}
-          >
-            {years.map((year) => (
-              <MenuItem key={year} value={year.toString()}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      {/* Selector de Pestañas (Año y Mes) */}
+      <Box className="meses-tabs-container">
+        <Tabs
+          value={selectedYearIndex}
+          onChange={handleYearTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          className="year-tabs"
+        >
+          {years.map((year, index) => (
+            <Tab key={index} label={year} />
+          ))}
+        </Tabs>
 
-        <FormControl variant="outlined" className="filter-select">
-          <InputLabel id="month-select-label">
-            {t("meses.selectMonth")}
-          </InputLabel>
-          <Select
-            labelId="month-select-label"
-            id="month-select"
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            label={t("meses.selectMonth")}
-          >
-            {months.map((month) => (
-              <MenuItem key={month} value={month.toString()}>
-                {t(`meses.monthNames.${month}`)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Tabs
+          value={selectedMonthIndex}
+          onChange={handleMonthTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          className="month-tabs"
+        >
+          {months.map((month, index) => (
+            <Tab key={index} label={t(`meses.monthNames.${month}`)} />
+          ))}
+        </Tabs>
       </Box>
 
-      {/* Botones de Añadir */}
       <Box component="section" className="meses-actions">
         <Button
           variant="contained"
           className="btn-add-income"
           startIcon={<TrendingUpIcon />}
+          onClick={() => setOpenIncomeModal(true)}
           disableRipple
         >
           {t("meses.addIncome")}
@@ -133,11 +158,105 @@ export const Meses: React.FC = () => {
           variant="contained"
           className="btn-add-expense"
           startIcon={<TrendingDownIcon />}
+          onClick={() => setOpenExpenseModal(true)}
           disableRipple
         >
           {t("meses.addExpense")}
         </Button>
       </Box>
+
+      {/* Modales */}
+      <Dialog
+        open={openIncomeModal || openExpenseModal}
+        onClose={handleCloseModals}
+        PaperProps={{ sx: { borderRadius: "24px", padding: "1rem" } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, fontFamily: "Outfit" }}>
+          {openIncomeModal
+            ? t("meses.modal.newIncome")
+            : t("meses.modal.newExpense")}
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem",
+            mt: 1,
+          }}
+        >
+          <TextField
+            autoFocus
+            label={t("meses.modal.amount")}
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              ),
+            }}
+          />
+          <FormControl fullWidth>
+            <InputLabel>{t("meses.modal.category")}</InputLabel>
+            <Select
+              value={category}
+              label={t("meses.modal.category")}
+              onChange={(e: SelectChangeEvent) =>
+                setCategory(e.target.value as string)
+              }
+            >
+              <MenuItem value="nomina">{t("meses.categories.nomina")}</MenuItem>
+              <MenuItem value="gastos">{t("meses.categories.gastos")}</MenuItem>
+              <MenuItem value="iphone">{t("meses.categories.iphone")}</MenuItem>
+              <MenuItem value="ocio">{t("meses.categories.ocio")}</MenuItem>
+              <MenuItem value="comida">{t("meses.categories.comida")}</MenuItem>
+              <MenuItem value="transporte">
+                {t("meses.categories.transporte")}
+              </MenuItem>
+              <MenuItem value="caprichos">
+                {t("meses.categories.caprichos")}
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label={t("meses.modal.description")}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions sx={{ padding: "0 24px 16px" }}>
+          <Button
+            onClick={handleCloseModals}
+            sx={{ color: "var(--text-muted)" }}
+          >
+            {t("meses.modal.cancel")}
+          </Button>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            sx={{
+              backgroundColor: openIncomeModal
+                ? "var(--pastel-green-text)"
+                : "var(--pastel-red-text)",
+              borderRadius: "12px",
+              boxShadow: "none",
+              "&:hover": {
+                backgroundColor: openIncomeModal
+                  ? "var(--pastel-green-dark)"
+                  : "var(--pastel-red-dark)",
+                boxShadow: "none",
+              },
+            }}
+          >
+            {t("meses.modal.save")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Box component="section" className="meses-summary">
         <Box className="summary-card ingresos">
@@ -148,7 +267,6 @@ export const Meses: React.FC = () => {
             +${ingresosTotal.toFixed(2)}
           </Typography>
         </Box>
-
         <Box className="summary-card gastos">
           <Typography variant="overline" component="h3">
             {t("meses.totalExpense")}
@@ -182,9 +300,7 @@ export const Meses: React.FC = () => {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number | undefined) =>
-                    `$${(value || 0).toFixed(2)}`
-                  }
+                  formatter={(value: number) => `$${value.toFixed(2)}`}
                   contentStyle={{
                     borderRadius: "12px",
                     border: "none",
