@@ -56,16 +56,19 @@ export const Meses: React.FC = () => {
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
+  const startYear = 2025;
 
-  const [selectedYearIndex, setSelectedYearIndex] = useState(0);
+  const [selectedYearIndex, setSelectedYearIndex] = useState(
+    Math.max(0, currentYear - startYear)
+  );
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(
     currentMonth - 1,
   );
 
-  const years = useMemo(
-    () => Array.from(new Array(5), (_, index) => currentYear - index),
-    [currentYear],
-  );
+  const years = useMemo(() => {
+    const numYears = Math.max(1, currentYear - startYear + 1);
+    return Array.from(new Array(numYears), (_, index) => startYear + index);
+  }, [currentYear]);
   const months = useMemo(
     () => Array.from(new Array(12), (_, index) => index + 1),
     [],
