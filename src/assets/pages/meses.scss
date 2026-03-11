@@ -1,11 +1,9 @@
-/* src/assets/pages/meses.scss */
-
 .meses-container {
   padding: 3rem 2rem;
   max-width: 1000px;
   margin: 0 auto;
   font-family: 'Outfit', sans-serif;
-  color: var(--text-dark, #4a4a4a);
+  color: $text-dark;
   min-height: 100vh;
 
   .meses-header {
@@ -15,7 +13,7 @@
     .MuiTypography-h3 {
       font-size: 2.75rem !important;
       font-weight: 700 !important;
-      color: var(--text-dark, #4a4a4a);
+      color: $text-dark;
       margin-bottom: 0.75rem;
       letter-spacing: -0.02em;
       font-family: inherit;
@@ -23,7 +21,7 @@
 
     .MuiTypography-subtitle1 {
       font-size: 1.15rem !important;
-      color: var(--text-muted, #8c8c8c);
+      color: $text-muted;
       font-family: inherit;
       font-weight: 400;
     }
@@ -38,7 +36,7 @@
     width: 100%;
 
     .MuiTabs-root {
-      background: var(--card-bg, #ffffff);
+      background: $card-bg;
       border-radius: 9999px;
       padding: 0.3rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -47,7 +45,7 @@
       .MuiTabs-indicator {
         height: 100%;
         border-radius: 9999px;
-        background-color: var(--pastel-blue-light, #e6f0fa);
+        background-color: $pastel-blue-light;
         z-index: 0;
       }
 
@@ -57,14 +55,14 @@
         font-family: inherit;
         font-weight: 500;
         font-size: 0.95rem;
-        color: var(--text-muted, #8c8c8c);
+        color: $text-muted;
         min-height: 40px;
         min-width: 80px;
         border-radius: 9999px;
         transition: all 0.3s ease;
 
         &.Mui-selected {
-          color: var(--pastel-blue-text, #4b88d1);
+          color: $pastel-blue-text;
           font-weight: 700;
         }
       }
@@ -92,11 +90,11 @@
       transition: all 0.3s ease !important;
 
       &.btn-add-income {
-        background-color: var(--pastel-green-light, #eaf5eb) !important;
-        color: var(--pastel-green-text, #50a359) !important;
-        border: 1px solid var(--pastel-green-dark, #b8e0bc) !important;
+        background-color: $pastel-green-light !important;
+        color: $pastel-green-text!important;
+        border: 1px solid $pastel-green-dark!important;
 
-        .MuiSvgIcon-root { color: var(--pastel-green-text, #50a359); }
+        .MuiSvgIcon-root { color: $pastel-green-text; }
 
         &:hover {
           background-color: #d8eedb !important;
@@ -106,11 +104,11 @@
       }
 
       &.btn-add-expense {
-        background-color: var(--pastel-red-light, #fae6e6) !important;
-        color: var(--pastel-red-text, #d95b5b) !important;
-        border: 1px solid var(--pastel-red-dark, #f0b9b9) !important;
+        background-color: $pastel-red-light !important;
+        color: $pastel-red-text !important;
+        border: 1px solid $pastel-red-dark !important;
 
-        .MuiSvgIcon-root { color: var(--pastel-red-text, #d95b5b); }
+        .MuiSvgIcon-root { color: $pastel-red-text; }
 
         &:hover {
           background-color: #f7d7d7 !important;
@@ -128,24 +126,24 @@
     margin-bottom: 4rem;
 
     .summary-card {
-      background: var(--card-bg, #ffffff);
+      background: $card-bg;
       padding: 2rem 1.5rem;
       border-radius: 24px;
-      box-shadow: 0 12px 24px var(--card-shadow, rgba(142, 133, 165, 0.08)), 0 4px 8px rgba(0,0,0,0.02);
+      box-shadow: 0 12px 24px $card-shadow, rgba(142, 133, 165, 0.08), 0 4px 8px rgba(0,0,0,0.02);
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid var(--card-border, #f0eef5);
+      border: 1px solid $card-border;
       position: relative;
       overflow: hidden;
 
       &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 16px 32px var(--card-shadow, rgba(142, 133, 165, 0.08)), 0 8px 16px rgba(0,0,0,0.03);
+        box-shadow: 0 16px 32px $card-shadow, rgba(142, 133, 165, 0.08), 0 8px 16px rgba(0,0,0,0.03);
       }
 
       .MuiTypography-overline {
         font-size: 0.9rem !important;
-        color: var(--text-muted, #8c8c8c);
+        color: $text-muted;
         margin-bottom: 1rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -162,10 +160,10 @@
         font-family: inherit;
         z-index: 1;
         position: relative;
-        color: var(--text-dark, #4a4a4a);
+        color: $text-dark, #4a4a4a;
         
-        &.positive { color: var(--pastel-green-text, #50a359); }
-        &.negative { color: var(--pastel-red-text, #d95b5b); }
+        &.positive { color: $pastel-green-text }
+        &.negative { color: $pastel-red-text; }
       }
 
       &::before {
@@ -181,8 +179,8 @@
         filter: blur(20px);
       }
 
-      &.ingresos::before { background: var(--pastel-green-dark, #b8e0bc); }
-      &.gastos::before { background: var(--pastel-red-dark, #f0b9b9); }
+      &.ingresos::before { background: $pastel-green-dark }
+      &.gastos::before { background: $pastel-red-dark }
     }
   }
 
@@ -192,15 +190,15 @@
     gap: 2rem;
 
     .chart-card {
-      background: var(--card-bg, #ffffff);
+      background: $card-bg;
       border-radius: 24px;
       padding: 2.5rem;
-      box-shadow: 0 12px 24px var(--card-shadow, rgba(142, 133, 165, 0.08));
-      border: 1px solid var(--card-border, #f0eef5);
+      box-shadow: 0 12px 24px $card-shadow, rgba(142, 133, 165, 0.08);
+      border: 1px solid $card-border;
 
       .MuiTypography-h5 {
         font-size: 1.5rem !important;
-        color: var(--text-dark, #4a4a4a);
+        color: $text-dark;
         margin-bottom: 2rem;
         padding-bottom: 1rem;
         border-bottom: 2px dashed #f0edf5;

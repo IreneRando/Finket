@@ -1,34 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 
-/* src/assets/pages/ahorro.scss */
-
-/* Define Pastel Palette Variables */
-:root {
-  --bg-color: #faf9f6; /* Off-white pastel */
-  --text-dark: #4a4a4a;
-  --text-muted: #8c8c8c;
-  
-  --card-bg: #ffffff;
-  --card-border: #f0eef5;
-  --card-shadow: rgba(142, 133, 165, 0.08);
-
-  --pastel-blue-light: #e6f0fa;
-  --pastel-blue-dark: #a8cbf0;
-  --pastel-blue-text: #4b88d1;
-
-  --pastel-green-light: #eaf5eb;
-  --pastel-green-dark: #b8e0bc;
-  --pastel-green-text: #50a359;
-
-  --pastel-red-light: #fae6e6;
-  --pastel-red-dark: #f0b9b9;
-  --pastel-red-text: #d95b5b;
-
-  --btn-shadow: rgba(0, 0, 0, 0.04);
-}
-
 body {
-  background-color: var(--bg-color);
+  background-color: $bg-color;
   margin: 0;
 }
 
@@ -37,7 +10,7 @@ body {
   max-width: 950px;
   margin: 0 auto;
   font-family: 'Outfit', sans-serif;
-  color: var(--text-dark);
+  color: var($text-dark);
   min-height: 100vh;
 
   .ahorro-header {
@@ -47,7 +20,7 @@ body {
     h1, .MuiTypography-h3 {
       font-size: 2.75rem !important;
       font-weight: 700 !important;
-      color: var(--text-dark);
+      color: $text-dark;
       margin-bottom: 0.75rem;
       letter-spacing: -0.02em;
       font-family: inherit;
@@ -55,7 +28,7 @@ body {
 
     p, .MuiTypography-subtitle1 {
       font-size: 1.15rem !important;
-      color: var(--text-muted);
+      color: $text-muted;
       font-family: inherit;
       font-weight: 400;
     }
@@ -68,24 +41,24 @@ body {
     margin-bottom: 4rem;
 
     .summary-card {
-      background: var(--card-bg);
+      background: $card-bg;
       padding: 2rem 1.5rem;
       border-radius: 24px;
-      box-shadow: 0 12px 24px var(--card-shadow), 0 4px 8px rgba(0,0,0,0.02);
+      box-shadow: 0 12px 24px $card-shadow, 0 4px 8px rgba(0,0,0,0.02);
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid var(--card-border);
+      border: 1px solid var($card-border);
       position: relative;
       overflow: hidden;
 
       &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 16px 32px var(--card-shadow), 0 8px 16px rgba(0,0,0,0.03);
+        box-shadow: 0 16px 32px $card-shadow, 0 8px 16px rgba(0,0,0,0.03);
       }
 
       h3, .MuiTypography-overline {
         font-size: 0.9rem !important;
-        color: var(--text-muted);
+        color: $text-muted;
         margin-bottom: 1rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -102,10 +75,10 @@ body {
         font-family: inherit;
         z-index: 1;
         position: relative;
-        color: var(--text-dark);
+        color: $text-dark;
         
-        &.positive { color: var(--pastel-green-text); }
-        &.negative { color: var(--pastel-red-text); }
+        &.positive { color: $pastel-green-text; }
+        &.negative { color: $pastel-red-text; }
       }
 
       /* Soft Pastel Background Accents */
@@ -123,7 +96,7 @@ body {
       }
       
       &.balance h3 {
-        color: var(--pastel-blue-text);
+        color: $pastel-blue-text;
       }
     }
   }
@@ -141,17 +114,17 @@ body {
       font-weight: 600 !important;
       font-family: inherit !important;
       text-transform: none !important;
-      box-shadow: 0 8px 16px var(--btn-shadow) !important;
+      box-shadow: 0 8px 16px $btn-shadow !important;
       transition: all 0.3s ease !important;
 
       &.btn-add-income {
-        background-color: var(--pastel-green-light) !important;
-        color: var(--pastel-green-text) !important;
-        border: 1px solid var(--pastel-green-dark) !important;
+        background-color: $pastel-green-light !important;
+        color: $pastel-green-text !important;
+        border: 1px solid $pastel-green-dark !important;
 
         /* Override MUI Icon Color */
         .MuiSvgIcon-root {
-          color: var(--pastel-green-text);
+          color: $pastel-green-text;
         }
 
         &:hover {
@@ -162,13 +135,13 @@ body {
       }
 
       &.btn-add-expense {
-        background-color: var(--pastel-red-light) !important;
-        color: var(--pastel-red-text) !important;
-        border: 1px solid var(--pastel-red-dark) !important;
+        background-color: $pastel-red-light !important;
+        color: $pastel-red-text !important;
+        border: 1px solid $pastel-red-dark !important;
 
         /* Override MUI Icon Color */
         .MuiSvgIcon-root {
-          color: var(--pastel-red-text);
+          color: $pastel-red-text;
         }
 
         &:hover {
@@ -181,15 +154,15 @@ body {
   }
 
   .ahorro-transactions {
-    background: var(--card-bg);
+    background: $card-bg;
     border-radius: 24px;
     padding: 3rem;
-    box-shadow: 0 12px 24px var(--card-shadow);
-    border: 1px solid var(--card-border);
+    box-shadow: 0 12px 24px $card-shadow;
+    border: 1px solid $card-border;
 
     h2, .MuiTypography-h5 {
       font-size: 1.6rem !important;
-      color: var(--text-dark);
+      color: $text-dark;
       margin-bottom: 1.5rem;
       padding-bottom: 1.25rem;
       border-bottom: 2px dashed #f0edf5;
@@ -202,7 +175,7 @@ body {
       padding: 4rem 0;
       
       p {
-        color: var(--text-muted);
+        color: $text-muted;
         font-style: italic;
         font-size: 1.1rem;
       }
