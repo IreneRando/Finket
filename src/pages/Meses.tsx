@@ -259,21 +259,14 @@ export const Meses: React.FC = () => {
       <Dialog
         open={openIncomeModal || openExpenseModal}
         onClose={handleCloseModals}
-        PaperProps={{ sx: { borderRadius: "24px", padding: "1rem" } }}
+        classes={{ paper: "meses-modal-paper" }}
       >
-        <DialogTitle sx={{ fontWeight: 700, fontFamily: "Outfit" }}>
+        <DialogTitle className="modal-title">
           {openIncomeModal
             ? t("meses.modal.newIncome")
             : t("meses.modal.newExpense")}
         </DialogTitle>
-        <DialogContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1.5rem",
-            mt: 1,
-          }}
-        >
+        <DialogContent className="modal-content">
           <TextField
             autoFocus
             label={t("meses.modal.amount")}
@@ -332,29 +325,17 @@ export const Meses: React.FC = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </DialogContent>
-        <DialogActions sx={{ padding: "0 24px 16px" }}>
+        <DialogActions className="modal-actions">
           <Button
             onClick={handleCloseModals}
-            sx={{ color: "var(--text-muted)" }}
+            className="modal-btn-cancel"
           >
             {t("meses.modal.cancel")}
           </Button>
           <Button
             onClick={handleSave}
             variant="contained"
-            sx={{
-              backgroundColor: openIncomeModal
-                ? "var(--pastel-green-text)"
-                : "var(--pastel-red-text)",
-              borderRadius: "12px",
-              boxShadow: "none",
-              "&:hover": {
-                backgroundColor: openIncomeModal
-                  ? "var(--pastel-green-dark)"
-                  : "var(--pastel-red-dark)",
-                boxShadow: "none",
-              },
-            }}
+            className={`modal-btn-save ${openIncomeModal ? "income" : "expense"}`}
           >
             {t("meses.modal.save")}
           </Button>
@@ -422,16 +403,8 @@ export const Meses: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  color: "var(--text-muted)",
-                }}
-              >
-                <Typography variant="body1">
+              <Box className="empty-chart-container">
+                <Typography variant="body1" className="empty-chart-text">
                   No hay datos en este periodo.
                 </Typography>
               </Box>

@@ -237,3 +237,59 @@
     }
   }
 }
+
+.meses-modal-paper {
+  border-radius: 24px !important;
+  padding: 1rem;
+  
+  .modal-title {
+    font-weight: 700 !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+  
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 1rem !important;
+    overflow-y: visible !important;
+  }
+  
+  .modal-actions {
+    padding: 0 24px 16px;
+    
+    .modal-btn-cancel {
+      color: $text-muted;
+      font-weight: 500;
+      text-transform: none;
+    }
+    
+    .modal-btn-save {
+      font-weight: 500;
+      text-transform: none;
+      border-radius: 12px;
+      box-shadow: none;
+      padding: 0.5rem 1.5rem;
+      
+      &.income {
+        background-color: $pastel-green-text;
+        color: #fff;
+        
+        &:hover {
+          background-color: $pastel-green-dark;
+          box-shadow: none;
+        }
+      }
+      
+      &.expense {
+        background-color: $pastel-red-text;
+        color: #fff;
+        
+        &:hover {
+          background-color: $pastel-red-dark;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
