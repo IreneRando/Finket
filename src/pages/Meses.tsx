@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -29,16 +29,27 @@ import {
   Legend,
 } from "recharts";
 import "../assets/pages/meses.scss";
+import { supabase } from "../supabaseClient";
 
-const rawData = [
-  { key: "nomina", value: 2500, color: "#b8e0bc" },
-  { key: "gastos", value: 400, color: "#f0b9b9" },
-  { key: "iphone", value: 150, color: "#a8cbf0" },
-  { key: "ocio", value: 200, color: "#faddc0" },
-  { key: "comida", value: 350, color: "#eadaf5" },
-  { key: "transporte", value: 80, color: "#f5f1da" },
-  { key: "caprichos", value: 120, color: "#f5dae7" },
-];
+const categoryColors: Record<string, string> = {
+  nomina: "#b8e0bc",
+  gastos: "#f0b9b9",
+  iphone: "#a8cbf0",
+  ocio: "#faddc0",
+  comida: "#eadaf5",
+  transporte: "#f5f1da",
+  caprichos: "#f5dae7",
+};
+
+export interface Transaction {
+  id: string;
+  created_at?: string;
+  type: "income" | "expense";
+  amount: number | string;
+  category: string;
+  description?: string | null;
+  transaction_date: string;
+}
 
 export const Meses: React.FC = () => {
   const { t } = useTranslation();
@@ -46,34 +57,83 @@ export const Meses: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
-  // Estado para Tabs
   const [selectedYearIndex, setSelectedYearIndex] = useState(0);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(
     currentMonth - 1,
   );
 
-  // Generamos los años (ej: 2026, 2025, 2024...)
-  const years = Array.from(new Array(5), (_, index) => currentYear - index);
-  const months = Array.from(new Array(12), (_, index) => index + 1);
+  const years = useMemo(
+    () => Array.from(new Array(5), (_, index) => currentYear - index),
+    [currentYear],
+  );
+  const months = useMemo(
+    () => Array.from(new Array(12), (_, index) => index + 1),
+    [],
+  );
 
-  // Estados modales
   const [openIncomeModal, setOpenIncomeModal] = useState(false);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
 
-  // Estado del formulario
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
 
-  const data = rawData.map((item) => ({
-    ...item,
-    name: t(`meses.categories.${item.key}`),
-  }));
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const ingresosTotal = data.find((d) => d.key === "nomina")?.value || 0;
-  const gastosTotal = data
-    .filter((d) => d.key !== "nomina")
-    .reduce((acc, curr) => acc + curr.value, 0);
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchTransactions = async () => {
+      const year = years[selectedYearIndex];
+      const month = months[selectedMonthIndex];
+
+      // Formato YYYY-MM-DD para buscar todos en el mes correspondiente
+      const startDate = `${year}-${month.toString().padStart(2, "0")}-01`;
+      const lastDay = new Date(year, month, 0).getDate();
+      const endDate = `${year}-${month.toString().padStart(2, "0")}-${lastDay}`;
+
+      const { data, error } = await supabase
+        .from("transacciones")
+        .select("*")
+        .gte("transaction_date", startDate)
+        .lte("transaction_date", endDate);
+
+      if (!ignore && data && !error) {
+        setTransactions(data);
+      }
+    };
+
+    fetchTransactions();
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedYearIndex, selectedMonthIndex, refreshTrigger, years, months]);
+
+  const ingresosTotal = transactions
+    .filter((d) => d.type === "income")
+    .reduce((acc, curr) => acc + Number(curr.amount), 0);
+
+  const gastosTotal = transactions
+    .filter((d) => d.type === "expense")
+    .reduce((acc, curr) => acc + Number(curr.amount), 0);
+
+  // Datos agrupados para el PieChart usando transacciones reales
+  const groupedData: Record<string, number> = {};
+  transactions
+    .filter((t) => t.type === "expense" || t.type === "income") // Puedes agrupar solo gastos si lo prefieres
+    .forEach((t) => {
+      groupedData[t.category] =
+        (groupedData[t.category] || 0) + Number(t.amount);
+    });
+
+  const chartData = Object.keys(groupedData).map((key) => ({
+    key,
+    name: t(`meses.categories.${key}`, { defaultValue: key }),
+    value: groupedData[key],
+    color: categoryColors[key] || "#cccccc",
+  }));
 
   const handleYearTabChange = (
     event: React.SyntheticEvent,
@@ -101,9 +161,36 @@ export const Meses: React.FC = () => {
     resetForm();
   };
 
-  const handleSave = () => {
-    // Aquí iría la lógica de guardado
-    handleCloseModals();
+  const handleSave = async () => {
+    if (!amount || !category) return;
+
+    const type = openIncomeModal ? "income" : "expense";
+    const year = years[selectedYearIndex];
+    const month = months[selectedMonthIndex];
+
+    let trxDate = new Date();
+    if (year !== currentYear || month !== currentMonth) {
+      // Si el año o el mes seleccionado no es el actual, fechamos a mitad de mes.
+      trxDate = new Date(year, month - 1, 15);
+    }
+
+    const { error } = await supabase.from("transacciones").insert([
+      {
+        type,
+        amount: parseFloat(amount),
+        category,
+        description,
+        transaction_date: trxDate.toISOString().split("T")[0],
+      },
+    ]);
+
+    if (!error) {
+      setRefreshTrigger((prev) => prev + 1);
+      handleCloseModals();
+    } else {
+      console.error(error);
+      alert("Uh oh! Había un error al guardar");
+    }
   };
 
   return (
@@ -207,17 +294,30 @@ export const Meses: React.FC = () => {
                 setCategory(e.target.value as string)
               }
             >
-              <MenuItem value="nomina">{t("meses.categories.nomina")}</MenuItem>
-              <MenuItem value="gastos">{t("meses.categories.gastos")}</MenuItem>
-              <MenuItem value="iphone">{t("meses.categories.iphone")}</MenuItem>
-              <MenuItem value="ocio">{t("meses.categories.ocio")}</MenuItem>
-              <MenuItem value="comida">{t("meses.categories.comida")}</MenuItem>
-              <MenuItem value="transporte">
-                {t("meses.categories.transporte")}
-              </MenuItem>
-              <MenuItem value="caprichos">
-                {t("meses.categories.caprichos")}
-              </MenuItem>
+              {openIncomeModal ? (
+                <MenuItem value="nomina">
+                  {t("meses.categories.nomina")}
+                </MenuItem>
+              ) : (
+                <>
+                  <MenuItem value="gastos">
+                    {t("meses.categories.gastos")}
+                  </MenuItem>
+                  <MenuItem value="iphone">
+                    {t("meses.categories.iphone")}
+                  </MenuItem>
+                  <MenuItem value="ocio">{t("meses.categories.ocio")}</MenuItem>
+                  <MenuItem value="comida">
+                    {t("meses.categories.comida")}
+                  </MenuItem>
+                  <MenuItem value="transporte">
+                    {t("meses.categories.transporte")}
+                  </MenuItem>
+                  <MenuItem value="caprichos">
+                    {t("meses.categories.caprichos")}
+                  </MenuItem>
+                </>
+              )}
             </Select>
           </FormControl>
           <TextField
@@ -283,40 +383,56 @@ export const Meses: React.FC = () => {
             {t("meses.distribution")}
           </Typography>
           <Box sx={{ width: "100%", height: 400 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={90}
-                  outerRadius={140}
-                  paddingAngle={3}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number | undefined) =>
-                    `€${(value || 0).toFixed(2)}`
-                  }
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "none",
-                    boxShadow: "0 8px 16px rgba(0,0,0,0.08)",
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  iconType="circle"
-                  wrapperStyle={{ fontFamily: "inherit", paddingTop: "20px" }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={90}
+                    outerRadius={140}
+                    paddingAngle={3}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number | undefined) =>
+                      `€${(value || 0).toFixed(2)}`
+                    }
+                    contentStyle={{
+                      borderRadius: "12px",
+                      border: "none",
+                      boxShadow: "0 8px 16px rgba(0,0,0,0.08)",
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    iconType="circle"
+                    wrapperStyle={{ fontFamily: "inherit", paddingTop: "20px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "100%",
+                  color: "var(--text-muted)",
+                }}
+              >
+                <Typography variant="body1">
+                  No hay datos en este periodo.
+                </Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>
