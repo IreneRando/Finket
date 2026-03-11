@@ -41,14 +41,23 @@ const categoryColors: Record<string, string> = {
   caprichos: "#f5dae7",
 };
 
+export interface Categoria {
+  id: string;
+  nombre: string;
+  tipo: string;
+  color_hex?: string;
+}
+
 export interface Transaction {
   id: string;
   created_at?: string;
   type: "income" | "expense";
   amount: number | string;
-  category: string;
-  description?: string | null;
-  transaction_date: string;
+  categoria_id: string;
+  descripcion?: string | null;
+  fecha: string;
+
+  categorias?: Categoria;
 }
 
 export const Meses: React.FC = () => {
@@ -59,7 +68,7 @@ export const Meses: React.FC = () => {
   const startYear = 2025;
 
   const [selectedYearIndex, setSelectedYearIndex] = useState(
-    Math.max(0, currentYear - startYear)
+    Math.max(0, currentYear - startYear),
   );
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(
     currentMonth - 1,
@@ -78,8 +87,8 @@ export const Meses: React.FC = () => {
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
 
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
+  const [categoria_id, setCategoria_id] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -127,8 +136,8 @@ export const Meses: React.FC = () => {
   transactions
     .filter((t) => t.type === "expense" || t.type === "income") // Puedes agrupar solo gastos si lo prefieres
     .forEach((t) => {
-      groupedData[t.category] =
-        (groupedData[t.category] || 0) + Number(t.amount);
+      groupedData[t.categoria_id] =
+        (groupedData[t.categoria_id] || 0) + Number(t.amount);
     });
 
   const chartData = Object.keys(groupedData).map((key) => ({
@@ -154,8 +163,8 @@ export const Meses: React.FC = () => {
 
   const resetForm = () => {
     setAmount("");
-    setCategory("");
-    setDescription("");
+    setCategoria_id("");
+    setDescripcion("");
   };
 
   const handleCloseModals = () => {
@@ -165,7 +174,7 @@ export const Meses: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!amount || !category) return;
+    if (!amount || !categoria_id) return;
 
     const type = openIncomeModal ? "income" : "expense";
     const year = years[selectedYearIndex];
@@ -181,9 +190,9 @@ export const Meses: React.FC = () => {
       {
         type,
         amount: parseFloat(amount),
-        category,
-        description,
-        transaction_date: trxDate.toISOString().split("T")[0],
+        categoria_id,
+        descripcion,
+        fecha: trxDate.toISOString().split("T")[0],
       },
     ]);
 
@@ -191,8 +200,10 @@ export const Meses: React.FC = () => {
       setRefreshTrigger((prev) => prev + 1);
       handleCloseModals();
     } else {
-      console.error(error);
-      alert("Uh oh! Había un error al guardar");
+      console.error("Error detallado:", error.message); // Nos dirá si es un tema de columnas
+      console.error("Código de error:", error.code); // Nos dirá si es un tema de permisos (42501 es RLS)
+      console.error("Detalle:", error.details); // Nos dirá si un dato no encaja
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -284,36 +295,39 @@ export const Meses: React.FC = () => {
           <FormControl fullWidth>
             <InputLabel>{t("meses.modal.category")}</InputLabel>
             <Select
-              value={category}
+              value={categoria_id}
               label={t("meses.modal.category")}
               onChange={(e: SelectChangeEvent) =>
-                setCategory(e.target.value as string)
+                setCategoria_id(e.target.value)
               }
             >
-              {openIncomeModal ? (
-                <MenuItem value="nomina">
-                  {t("meses.categories.nomina")}
-                </MenuItem>
-              ) : (
-                <>
-                  <MenuItem value="gastos">
-                    {t("meses.categories.gastos")}
-                  </MenuItem>
-                  <MenuItem value="iphone">
-                    {t("meses.categories.iphone")}
-                  </MenuItem>
-                  <MenuItem value="ocio">{t("meses.categories.ocio")}</MenuItem>
-                  <MenuItem value="comida">
-                    {t("meses.categories.comida")}
-                  </MenuItem>
-                  <MenuItem value="transporte">
-                    {t("meses.categories.transporte")}
-                  </MenuItem>
-                  <MenuItem value="caprichos">
-                    {t("meses.categories.caprichos")}
-                  </MenuItem>
-                </>
-              )}
+              <MenuItem value="280ddae4-898c-4647-861a-cd8abcd3cbc6">
+                {t("meses.categories.nomina")}
+              </MenuItem>
+              <MenuItem value="c554d74d-c21c-4e12-8443-7f9d59d1a278">
+                {t("meses.categories.alquiler")}
+              </MenuItem>
+              <MenuItem value="ff756d98-6ae8-4829-b659-40b56a10a762">
+                {t("meses.categories.gastos")}
+              </MenuItem>
+              <MenuItem value="5d17017b-323a-45f8-9d1c-c2fcb6f62a45">
+                {t("meses.categories.iphone")}
+              </MenuItem>
+              <MenuItem value="341f94ab-6bed-415d-86dd-b257b9725ee0">
+                {t("meses.categories.ahorro")}
+              </MenuItem>
+              <MenuItem value="28b655f6-9532-4adf-bebe-09e0622dc20c">
+                {t("meses.categories.ocio")}
+              </MenuItem>
+              <MenuItem value="fbc0f021-2271-45bd-981a-f00068e2cc4a">
+                {t("meses.categories.comida")}
+              </MenuItem>
+              <MenuItem value="df4a6882-1db5-42a6-8763-913b308c0307">
+                {t("meses.categories.transporte")}
+              </MenuItem>
+              <MenuItem value="f91d83a2-315f-408e-96c2-e2db4a0837f8">
+                {t("meses.categories.caprichos")}
+              </MenuItem>
             </Select>
           </FormControl>
           <TextField
@@ -321,15 +335,12 @@ export const Meses: React.FC = () => {
             type="text"
             fullWidth
             variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
           />
         </DialogContent>
         <DialogActions className="modal-actions">
-          <Button
-            onClick={handleCloseModals}
-            className="modal-btn-cancel"
-          >
+          <Button onClick={handleCloseModals} className="modal-btn-cancel">
             {t("meses.modal.cancel")}
           </Button>
           <Button
