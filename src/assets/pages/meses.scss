@@ -2,7 +2,6 @@
   padding: 3rem 2rem;
   max-width: 1000px;
   margin: 0 auto;
-  font-family: 'Outfit', sans-serif;
   color: $text-dark;
   min-height: 100vh;
 
@@ -12,18 +11,16 @@
 
     .MuiTypography-h3 {
       font-size: 2.75rem !important;
-      font-weight: 700 !important;
+      font-family: 'poppins-semibold' !important;
       color: $text-dark;
       margin-bottom: 0.75rem;
       letter-spacing: -0.02em;
-      font-family: inherit;
     }
 
     .MuiTypography-subtitle1 {
       font-size: 1.15rem !important;
       color: $text-muted;
-      font-family: inherit;
-      font-weight: 400;
+      font-family: 'poppins-regular';
     }
   }
 
@@ -52,8 +49,7 @@
       .MuiTab-root {
         z-index: 1;
         text-transform: none;
-        font-family: inherit;
-        font-weight: 500;
+        font-family: 'poppins-medium';
         font-size: 0.95rem;
         color: $text-muted;
         min-height: 40px;
@@ -63,7 +59,7 @@
 
         &.Mui-selected {
           color: $pastel-blue-text;
-          font-weight: 700;
+          font-family: 'poppins-bold';
         }
       }
     }
@@ -83,8 +79,7 @@
       padding: 0.85rem 2.2rem !important;
       border-radius: 16px !important;
       font-size: 1.05rem !important;
-      font-weight: 600 !important;
-      font-family: inherit !important;
+      font-family: 'poppins-semibold' !important;
       text-transform: none !important;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04) !important;
       transition: all 0.3s ease !important;
@@ -147,17 +142,15 @@
         margin-bottom: 1rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-weight: 600 !important;
-        font-family: inherit;
+        font-family: 'poppins-semibold' !important;
         z-index: 1;
         position: relative;
       }
 
       .amount {
         font-size: 2.5rem !important;
-        font-weight: 700 !important;
+        font-family: 'poppins-semibold' !important;
         letter-spacing: -0.03em;
-        font-family: inherit;
         z-index: 1;
         position: relative;
         color: $text-dark, #4a4a4a;
@@ -202,8 +195,7 @@
         margin-bottom: 2rem;
         padding-bottom: 1rem;
         border-bottom: 2px dashed #f0edf5;
-        font-weight: 600 !important;
-        font-family: inherit;
+        font-family: 'poppins-semibold' !important;
         text-align: center;
       }
 
@@ -243,8 +235,7 @@
   padding: 1rem;
   
   .modal-title {
-    font-weight: 700 !important;
-    font-family: 'Outfit', sans-serif !important;
+    font-family: 'poppins-semibold' !important;
   }
   
   .modal-content {
@@ -260,12 +251,18 @@
     
     .modal-btn-cancel {
       color: $text-muted;
-      font-weight: 500;
+      font-family: 'poppins-medium';
       text-transform: none;
+      padding: 0.5rem 1.5rem;
+
+      &:hover {
+        border-radius: 12px;
+        padding: 0.5rem 1.5rem;
+      }
     }
     
     .modal-btn-save {
-      font-weight: 500;
+      font-family: 'poppins-medium';
       text-transform: none;
       border-radius: 12px;
       box-shadow: none;

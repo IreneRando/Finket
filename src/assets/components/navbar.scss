@@ -1,13 +1,11 @@
-/* src/assets/components/navbar.scss */
 
 .navbar-container {
-  background-color: var(--card-bg, #ffffff);
-  box-shadow: 0 4px 12px var(--card-shadow, rgba(142, 133, 165, 0.08));
+  background-color: $card-bg;
+  box-shadow: 0 4px 12px $card-shadow;
   position: sticky;
   top: 0;
   z-index: 1000;
-  font-family: inherit;
-  border-bottom: 1px solid var(--card-border, #f0eef5);
+  border-bottom: 1px solid $card-border;
 
   .navbar-content {
     max-width: 1200px;
@@ -21,8 +19,8 @@
       h2 {
         margin: 0;
         font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--pastel-blue-text, #4b88d1);
+        font-family: 'poppins-bold';
+        color: $pastel-blue-text;
         letter-spacing: -0.02em;
         cursor: pointer;
       }
@@ -41,8 +39,8 @@
           align-items: center;
           gap: 0.5rem;
           text-decoration: none;
-          color: var(--text-muted, #8c8c8c);
-          font-weight: 500;
+          color: $text-muted;
+          font-family: 'poppins-medium';
           font-size: 1rem;
           padding: 0.5rem 1rem;
           border-radius: 12px;
@@ -54,18 +52,18 @@
           }
 
           &:hover {
-            color: var(--text-dark, #4a4a4a);
-            background-color: var(--bg-color, #faf9f6);
+            color: $text-dark;
+            background-color: $bg-color;
             transform: translateY(-1px);
           }
 
           &.active {
-            color: var(--pastel-blue-text, #4b88d1);
-            background-color: var(--pastel-blue-light, #e6f0fa);
-            font-weight: 600;
+            color: $pastel-blue-text;
+            background-color: $pastel-blue-light;
+            font-family: 'poppins-semibold';
 
             .nav-icon {
-              color: var(--pastel-blue-text, #4b88d1);
+              color: $pastel-blue-text;
             }
           }
         }
@@ -76,28 +74,28 @@
           gap: 0.5rem;
           margin-left: 1rem;
           padding: 0.5rem 1rem;
-          background: var(--bg-color, #faf9f6);
+          background: $bg-color;
           border-radius: 9999px;
-          border: 1px solid var(--card-border, #f0eef5);
+          border: 1px solid $card-border;
 
           .lang {
             cursor: pointer;
             font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted, #8c8c8c);
+            font-family: 'poppins-semibold';
+            color: $text-muted;
             transition: color 0.2s ease;
 
             &:hover {
-              color: var(--text-dark, #4a4a4a);
+              color: $text-dark;
             }
 
             &.active {
-              color: var(--pastel-blue-text, #4b88d1);
+              color: $pastel-blue-text;
             }
           }
 
           .separator {
-            color: var(--card-border, #f0eef5);
+            color: $card-border;
             font-size: 0.85rem;
           }
         }
