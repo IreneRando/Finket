@@ -21,6 +21,9 @@ import {
 import type { SelectChangeEvent } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { IconButton } from "@mui/material";
 import {
   PieChart,
   Pie,
@@ -36,7 +39,7 @@ const initialRawData = [
   { key: "iphone", value: 0, color: "#6366f1", categoryId: 2 },
   { key: "comida", value: 0, color: "#0ea5e9", categoryId: 3 },
   { key: "ocio", value: 0, color: "#f59e0b", categoryId: 4 },
-  { key: "transporte", value: 0, color: "#8b5cf6", categoryId: 5 },
+  { key: "transporte", value: 0, color: "#1201aaff", categoryId: 5 },
   { key: "caprichos", value: 0, color: "#ec4899", categoryId: 6 },
   { key: "gastos", value: 0, color: "#f43f5e", categoryId: 7 },
 ];
@@ -70,12 +73,15 @@ export const Meses: React.FC = () => {
   const [description, setDescription] = useState("");
 
   const [chartData, setChartData] = useState(initialRawData);
+  const [monthTransactions, setMonthTransactions] = useState<any[]>([]);
+  const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
   const fetchMovimientos = async () => {
     const year = years[selectedYearIndex];
     const month = months[selectedMonthIndex];
+    const lastDay = new Date(year, month, 0).getDate();
     const start = `${year}-${String(month).padStart(2, "0")}-01`;
-    const end = `${year}-${String(month).padStart(2, "0")}-31`;
+    const end = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
 
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -106,6 +112,26 @@ export const Meses: React.FC = () => {
       });
     }
     setChartData(newData);
+
+    // Fetch detailed transactions for the month
+    let detailedQuery = supabase
+      .from("movimientos")
+      .select("id, monto, descripcion, fecha, categorias!inner(nombre, tipo)")
+      .gte('fecha', start)
+      .lte('fecha', end)
+      .order("fecha", { ascending: false })
+      .order("creado_at", { ascending: false });
+
+    if (user) {
+      detailedQuery = detailedQuery.eq("usuario_id", user.id);
+    }
+
+    const { data: detailed, error: detailedError } = await detailedQuery;
+    if (detailedError) {
+      console.error("Error fetching detailed txs:", detailedError);
+    } else if (detailed) {
+      setMonthTransactions(detailed);
+    }
   };
 
   useEffect(() => {
@@ -148,7 +174,36 @@ export const Meses: React.FC = () => {
   const handleCloseModals = () => {
     setOpenIncomeModal(false);
     setOpenExpenseModal(false);
+    setEditingTransactionId(null);
     resetForm();
+  };
+
+  const handleEdit = (tx: any) => {
+    setEditingTransactionId(tx.id);
+    setAmount(tx.monto.toString());
+    setDescription(tx.descripcion || "");
+    setBanco(tx.banco || "Sabadell");
+    
+    // Find category key from categoryId
+    const cat = initialRawData.find(c => c.categoryId === tx.categoria_id);
+    setCategory(cat ? cat.key : "");
+
+    if (cat?.key === "nomina") {
+      setOpenIncomeModal(true);
+    } else {
+      setOpenExpenseModal(true);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm(t("meses.modal.confirmDelete"))) {
+      const { error } = await supabase.from("movimientos").delete().eq("id", id);
+      if (!error) {
+        fetchMovimientos();
+      } else {
+        alert("Error al eliminar: " + error.message);
+      }
+    }
   };
 
   const handleSave = async () => {
@@ -156,25 +211,40 @@ export const Meses: React.FC = () => {
     if (!isNaN(numericAmount) && numericAmount > 0 && category) {
       const categoryObj = initialRawData.find((c) => c.key === category);
       if (categoryObj) {
-        const year = years[selectedYearIndex];
-        const month = months[selectedMonthIndex];
-        const dateObj = new Date();
-        const isCurrentMonth =
-          dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
-        const fechaInsert = isCurrentMonth
-          ? dateObj.toISOString().split("T")[0]
-          : `${year}-${String(month).padStart(2, "0")}-01`;
-
         const { data: { user } } = await supabase.auth.getUser();
 
-        const { error } = await supabase.from("movimientos").insert({
+        const transactionData = {
           monto: numericAmount,
           descripcion: description,
           categoria_id: categoryObj.categoryId,
-          fecha: fechaInsert,
           banco: banco,
           usuario_id: user?.id || null
-        });
+        };
+
+        let error;
+        if (editingTransactionId) {
+          // UPDATE
+          const { error: updateError } = await supabase
+            .from("movimientos")
+            .update(transactionData)
+            .eq("id", editingTransactionId);
+          error = updateError;
+        } else {
+          // INSERT
+          const year = years[selectedYearIndex];
+          const month = months[selectedMonthIndex];
+          const dateObj = new Date();
+          const isCurrentMonth =
+            dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
+          const fechaInsert = isCurrentMonth
+            ? dateObj.toISOString().split("T")[0]
+            : `${year}-${String(month).padStart(2, "0")}-01`;
+
+          const { error: insertError } = await supabase
+            .from("movimientos")
+            .insert({ ...transactionData, fecha: fechaInsert });
+          error = insertError;
+        }
 
         if (!error) {
           fetchMovimientos();
@@ -259,9 +329,10 @@ export const Meses: React.FC = () => {
         PaperProps={{ sx: { borderRadius: "24px", padding: "1rem" } }}
       >
         <DialogTitle sx={{ fontWeight: 700, fontFamily: "Outfit" }}>
-          {openIncomeModal
-            ? t("meses.modal.newIncome")
-            : t("meses.modal.newExpense")}
+          {editingTransactionId 
+            ? t("meses.modal.editTransaction")
+            : (openIncomeModal ? t("meses.modal.newIncome") : t("meses.modal.newExpense"))
+          }
         </DialogTitle>
         <DialogContent
           sx={{
@@ -382,21 +453,21 @@ export const Meses: React.FC = () => {
         </Box>
       </Box>
 
-      <Box component="section" className="charts-section">
+      <Box className="meses-content-grid">
         <Box className="chart-card">
           <Typography variant="h5" component="h2">
             {t("meses.distribution")}
           </Typography>
-          <Box sx={{ width: "100%", height: 400 }}>
+          <Box sx={{ width: "100%", height: 400, display: "flex", alignItems: "center" }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
-                  cx="50%"
+                  cx="35%"
                   cy="50%"
-                  innerRadius={90}
-                  outerRadius={140}
-                  paddingAngle={3}
+                  innerRadius={60}
+                  outerRadius={90}
+                  paddingAngle={5}
                   dataKey="value"
                   stroke="none"
                 >
@@ -415,13 +486,58 @@ export const Meses: React.FC = () => {
                   }}
                 />
                 <Legend
-                  verticalAlign="bottom"
-                  height={36}
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="middle"
                   iconType="circle"
-                  wrapperStyle={{ fontFamily: "inherit", paddingTop: "20px" }}
+                  wrapperStyle={{ 
+                    paddingLeft: "10px",
+                    fontFamily: "inherit",
+                    fontSize: "13px",
+                    width: "160px",
+                    lineHeight: "1.5rem"
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
+          </Box>
+        </Box>
+
+        {/* Seccion de Movimientos del Mes */}
+        <Box component="section" className="meses-transactions">
+          <Typography variant="h5" component="h2" fontWeight="700">
+            {t("meses.recentTransactions")}
+          </Typography>
+          <Box className="transaction-list" sx={{ mt: 2, display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {monthTransactions.length > 0 ? (
+              monthTransactions.map((tx) => (
+                <Box key={tx.id} className="transaction-item" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, backgroundColor: "var(--card-bg)", borderRadius: "16px", border: "1px solid var(--card-border)" }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Box className="action-buttons">
+                      <IconButton size="small" onClick={() => handleEdit(tx)} sx={{ color: "var(--pastel-blue-text)" }}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDelete(tx.id)} sx={{ color: "var(--pastel-red-text)" }}>
+                        <DeleteOutlineIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="600">{tx.descripcion || tx.categorias.nombre}</Typography>
+                      <Typography variant="body2" color="text.secondary">{tx.fecha}</Typography>
+                    </Box>
+                  </Box>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <Typography variant="h6" fontWeight="700" sx={{ color: tx.categorias.tipo === "ingreso" ? "var(--pastel-green-text)" : "var(--pastel-red-text)" }}>
+                      {tx.categorias.tipo === "ingreso" ? "+" : "-"}€{parseFloat(tx.monto).toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))
+            ) : (
+              <Box className="transaction-placeholder">
+                <Typography variant="body1">{t("meses.noTransactions")}</Typography>
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>

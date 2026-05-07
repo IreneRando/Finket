@@ -14,9 +14,7 @@
     "income": "Ingresos",
     "expenses": "Gastos",
     "addIncome": "Añadir Ingreso",
-    "addExpense": "Añadir Gasto",
-    "recentTransactions": "Últimos movimientos",
-    "noTransactions": "No hay movimientos recientes."
+    "addExpense": "Añadir Gasto"
   },
   "meses": {
     "title": "Visiograma Mensual",
@@ -28,6 +26,8 @@
     "totalIncome": "Total Ingresos",
     "totalExpense": "Total Gastos",
     "distribution": "Distribución por Categorías",
+    "recentTransactions": "Movimientos del mes",
+    "noTransactions": "No hay movimientos en este mes.",
     "modal": {
       "newIncome": "Nuevo Ingreso",
       "newExpense": "Nuevo Gasto",
@@ -35,7 +35,9 @@
       "category": "Categoría",
       "description": "Descripción (Opcional)",
       "cancel": "Cancelar",
-      "save": "Guardar"
+      "save": "Guardar",
+      "editTransaction": "Editar Movimiento",
+      "confirmDelete": "¿Estás seguro de que quieres eliminar este movimiento?"
     },
     "categories": {
       "nomina": "Nómina",
@@ -44,7 +46,7 @@
       "ocio": "Ocio",
       "comida": "Comida",
       "transporte": "Transporte",
-      "caprichos": "Caprichos/Parafarmacia"
+      "caprichos": "Parafarmacia"
     },
     "monthNames": {
       "1": "Enero",

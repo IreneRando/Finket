@@ -14,9 +14,7 @@
     "income": "Income",
     "expenses": "Expenses",
     "addIncome": "Add Income",
-    "addExpense": "Add Expense",
-    "recentTransactions": "Recent Transactions",
-    "noTransactions": "No recent transactions."
+    "addExpense": "Add Expense"
   },
   "meses": {
     "title": "Monthly Overview",
@@ -28,6 +26,8 @@
     "totalIncome": "Total Income",
     "totalExpense": "Total Expenses",
     "distribution": "Category Distribution",
+    "recentTransactions": "Monthly Transactions",
+    "noTransactions": "No transactions this month.",
     "modal": {
       "newIncome": "New Income",
       "newExpense": "New Expense",
@@ -35,7 +35,9 @@
       "category": "Category",
       "description": "Description (Optional)",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "editTransaction": "Edit Transaction",
+      "confirmDelete": "Are you sure you want to delete this transaction?"
     },
     "categories": {
       "nomina": "Payroll",
@@ -44,7 +46,7 @@
       "ocio": "Leisure",
       "comida": "Food",
       "transporte": "Transport",
-      "caprichos": "Treats/Pharmacy"
+      "caprichos": "Pharmacy"
     },
     "monthNames": {
       "1": "January",

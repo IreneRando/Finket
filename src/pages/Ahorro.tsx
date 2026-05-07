@@ -12,7 +12,6 @@ export const Ahorro: React.FC = () => {
   const { t } = useTranslation();
   const [balance, setBalance] = useState(0);
   const [caja, setCaja] = useState(0);
-  const [transactions, setTransactions] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,28 +50,6 @@ export const Ahorro: React.FC = () => {
         });
         setBalance(calcBalance);
         setCaja(calcCaja);
-      }
-
-      // 3. Fetch Recent Transactions
-      let recentQuery = supabase
-        .from("movimientos")
-        .select("id, monto, descripcion, fecha, categorias!inner(nombre, tipo)")
-        .order("fecha", { ascending: false })
-        .order("creado_at", { ascending: false })
-        .limit(5);
-
-      if (user) {
-        recentQuery = recentQuery.eq("usuario_id", user.id);
-      }
-
-      const { data: recent, error: recentError } = await recentQuery;
-
-      if (recentError) {
-        console.error("Error fetching recent txs:", recentError);
-      }
-
-      if (recent) {
-        setTransactions(recent);
       }
     };
     fetchData();
@@ -173,31 +150,6 @@ export const Ahorro: React.FC = () => {
             </Typography>
           </CardContent>
         </Card>
-      </Box>
-
-      <Box component="section" className="ahorro-transactions">
-        <Typography variant="h5" component="h2" fontWeight="700">
-          {t("ahorro.recentTransactions")}
-        </Typography>
-        <Box className="transaction-list" sx={{ mt: 2, display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {transactions.length > 0 ? (
-            transactions.map((tx) => (
-              <Box key={tx.id} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, backgroundColor: "var(--card-bg)", borderRadius: "16px", border: "1px solid var(--card-border)" }}>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="600">{tx.descripcion || tx.categorias.nombre}</Typography>
-                  <Typography variant="body2" color="text.secondary">{tx.fecha}</Typography>
-                </Box>
-                <Typography variant="h6" fontWeight="700" sx={{ color: tx.categorias.tipo === "ingreso" ? "var(--pastel-green-text)" : "var(--pastel-red-text)" }}>
-                  {tx.categorias.tipo === "ingreso" ? "+" : "-"}€{parseFloat(tx.monto).toFixed(2)}
-                </Typography>
-              </Box>
-            ))
-          ) : (
-            <Box className="transaction-placeholder">
-              <Typography variant="body1">{t("ahorro.noTransactions")}</Typography>
-            </Box>
-          )}
-        </Box>
       </Box>
     </Box>
   );
