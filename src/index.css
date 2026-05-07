@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Base Layout */
+  --bg-color: #f8fafc;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  
+  /* Cards */
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: rgba(15, 23, 42, 0.05);
+
+  /* Semantic Colors - Kept original variable names for compatibility, but updated to premium vibrant hexes */
+  
+  /* Blue / Primary */
+  --pastel-blue-light: #e0e7ff;
+  --pastel-blue-dark: #818cf8;
+  --pastel-blue-text: #4f46e5;
+
+  /* Green / Positive */
+  --pastel-green-light: #dcfce7;
+  --pastel-green-dark: #34d399;
+  --pastel-green-text: #059669;
+
+  /* Red / Negative */
+  --pastel-red-light: #ffe4e6;
+  --pastel-red-dark: #fb7185;
+  --pastel-red-text: #e11d48;
+
+  --btn-shadow: rgba(0, 0, 0, 0.06);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  font-family: 'Outfit', sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}

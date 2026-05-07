@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { supabase } from "../supabaseClient";
 import {
   Box,
   Typography,
@@ -30,14 +31,14 @@ import {
 } from "recharts";
 import "../assets/pages/meses.scss";
 
-const rawData = [
-  { key: "nomina", value: 2500, color: "#b8e0bc" },
-  { key: "gastos", value: 400, color: "#f0b9b9" },
-  { key: "iphone", value: 150, color: "#a8cbf0" },
-  { key: "ocio", value: 200, color: "#faddc0" },
-  { key: "comida", value: 350, color: "#eadaf5" },
-  { key: "transporte", value: 80, color: "#f5f1da" },
-  { key: "caprichos", value: 120, color: "#f5dae7" },
+const initialRawData = [
+  { key: "nomina", value: 0, color: "#10b981", categoryId: 1 },
+  { key: "iphone", value: 0, color: "#6366f1", categoryId: 2 },
+  { key: "comida", value: 0, color: "#0ea5e9", categoryId: 3 },
+  { key: "ocio", value: 0, color: "#f59e0b", categoryId: 4 },
+  { key: "transporte", value: 0, color: "#8b5cf6", categoryId: 5 },
+  { key: "caprichos", value: 0, color: "#ec4899", categoryId: 6 },
+  { key: "gastos", value: 0, color: "#f43f5e", categoryId: 7 },
 ];
 
 export const Meses: React.FC = () => {
@@ -52,8 +53,10 @@ export const Meses: React.FC = () => {
     currentMonth - 1,
   );
 
-  // Generamos los años (ej: 2026, 2025, 2024...)
-  const years = Array.from(new Array(5), (_, index) => currentYear - index);
+  // Generamos los años (desde el año actual bajando hasta 2026)
+  const startYear = 2026;
+  const numYears = Math.max(1, currentYear - startYear + 1);
+  const years = Array.from(new Array(numYears), (_, index) => currentYear - index);
   const months = Array.from(new Array(12), (_, index) => index + 1);
 
   // Estados modales
@@ -63,17 +66,63 @@ export const Meses: React.FC = () => {
   // Estado del formulario
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
+  const [banco, setBanco] = useState("Sabadell");
   const [description, setDescription] = useState("");
 
-  const data = rawData.map((item) => ({
+  const [chartData, setChartData] = useState(initialRawData);
+
+  const fetchMovimientos = async () => {
+    const year = years[selectedYearIndex];
+    const month = months[selectedMonthIndex];
+    const start = `${year}-${String(month).padStart(2, "0")}-01`;
+    const end = `${year}-${String(month).padStart(2, "0")}-31`;
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    let query = supabase
+      .from('movimientos')
+      .select('monto, categoria_id')
+      .gte('fecha', start)
+      .lte('fecha', end);
+
+    if (user) {
+      query = query.eq('usuario_id', user.id);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching movimientos:", error);
+      return;
+    }
+
+    const newData = initialRawData.map(item => ({ ...item, value: 0 }));
+    if (data) {
+      data.forEach(mov => {
+        const item = newData.find(d => d.categoryId === mov.categoria_id);
+        if (item) {
+          item.value += parseFloat(mov.monto);
+        }
+      });
+    }
+    setChartData(newData);
+  };
+
+  useEffect(() => {
+    fetchMovimientos();
+  }, [selectedYearIndex, selectedMonthIndex]);
+
+  const data = chartData.map((item) => ({
     ...item,
     name: t(`meses.categories.${item.key}`),
   }));
 
-  const ingresosTotal = data.find((d) => d.key === "nomina")?.value || 0;
+  const totalNominas = data.find((d) => d.key === "nomina")?.value || 0;
   const gastosTotal = data
     .filter((d) => d.key !== "nomina")
     .reduce((acc, curr) => acc + curr.value, 0);
+  
+  const ingresosTotal = totalNominas - gastosTotal;
 
   const handleYearTabChange = (
     event: React.SyntheticEvent,
@@ -92,6 +141,7 @@ export const Meses: React.FC = () => {
   const resetForm = () => {
     setAmount("");
     setCategory("");
+    setBanco("Sabadell");
     setDescription("");
   };
 
@@ -101,8 +151,39 @@ export const Meses: React.FC = () => {
     resetForm();
   };
 
-  const handleSave = () => {
-    // Aquí iría la lógica de guardado
+  const handleSave = async () => {
+    const numericAmount = parseFloat(amount);
+    if (!isNaN(numericAmount) && numericAmount > 0 && category) {
+      const categoryObj = initialRawData.find((c) => c.key === category);
+      if (categoryObj) {
+        const year = years[selectedYearIndex];
+        const month = months[selectedMonthIndex];
+        const dateObj = new Date();
+        const isCurrentMonth =
+          dateObj.getFullYear() === year && dateObj.getMonth() + 1 === month;
+        const fechaInsert = isCurrentMonth
+          ? dateObj.toISOString().split("T")[0]
+          : `${year}-${String(month).padStart(2, "0")}-01`;
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const { error } = await supabase.from("movimientos").insert({
+          monto: numericAmount,
+          descripcion: description,
+          categoria_id: categoryObj.categoryId,
+          fecha: fechaInsert,
+          banco: banco,
+          usuario_id: user?.id || null
+        });
+
+        if (!error) {
+          fetchMovimientos();
+        } else {
+          console.error("Error saving movimiento:", error);
+          alert("Error al guardar: " + error.message);
+        }
+      }
+    }
     handleCloseModals();
   };
 
@@ -149,7 +230,10 @@ export const Meses: React.FC = () => {
           variant="contained"
           className="btn-add-income"
           startIcon={<TrendingUpIcon />}
-          onClick={() => setOpenIncomeModal(true)}
+          onClick={() => {
+            setCategory("nomina");
+            setOpenIncomeModal(true);
+          }}
           disableRipple
         >
           {t("meses.addIncome")}
@@ -158,7 +242,10 @@ export const Meses: React.FC = () => {
           variant="contained"
           className="btn-add-expense"
           startIcon={<TrendingDownIcon />}
-          onClick={() => setOpenExpenseModal(true)}
+          onClick={() => {
+            setCategory("");
+            setOpenExpenseModal(true);
+          }}
           disableRipple
         >
           {t("meses.addExpense")}
@@ -207,19 +294,37 @@ export const Meses: React.FC = () => {
                 setCategory(e.target.value as string)
               }
             >
-              <MenuItem value="nomina">{t("meses.categories.nomina")}</MenuItem>
-              <MenuItem value="gastos">{t("meses.categories.gastos")}</MenuItem>
-              <MenuItem value="iphone">{t("meses.categories.iphone")}</MenuItem>
-              <MenuItem value="ocio">{t("meses.categories.ocio")}</MenuItem>
-              <MenuItem value="comida">{t("meses.categories.comida")}</MenuItem>
-              <MenuItem value="transporte">
-                {t("meses.categories.transporte")}
-              </MenuItem>
-              <MenuItem value="caprichos">
-                {t("meses.categories.caprichos")}
-              </MenuItem>
+              {openIncomeModal && (
+                <MenuItem value="nomina">{t("meses.categories.nomina")}</MenuItem>
+              )}
+              {openExpenseModal && [
+                <MenuItem key="gastos" value="gastos">{t("meses.categories.gastos")}</MenuItem>,
+                <MenuItem key="iphone" value="iphone">{t("meses.categories.iphone")}</MenuItem>,
+                <MenuItem key="ocio" value="ocio">{t("meses.categories.ocio")}</MenuItem>,
+                <MenuItem key="comida" value="comida">{t("meses.categories.comida")}</MenuItem>,
+                <MenuItem key="transporte" value="transporte">
+                  {t("meses.categories.transporte")}
+                </MenuItem>,
+                <MenuItem key="caprichos" value="caprichos">
+                  {t("meses.categories.caprichos")}
+                </MenuItem>,
+              ]}
             </Select>
           </FormControl>
+          
+          <FormControl fullWidth>
+            <InputLabel>Banco</InputLabel>
+            <Select
+              value={banco}
+              label="Banco"
+              onChange={(e: SelectChangeEvent) => setBanco(e.target.value as string)}
+            >
+              <MenuItem value="Sabadell">Sabadell</MenuItem>
+              <MenuItem value="BBVA">BBVA</MenuItem>
+              <MenuItem value="BBVA Caja">BBVA Caja</MenuItem>
+            </Select>
+          </FormControl>
+
           <TextField
             label={t("meses.modal.description")}
             type="text"
@@ -264,7 +369,7 @@ export const Meses: React.FC = () => {
             {t("meses.totalIncome")}
           </Typography>
           <Typography variant="h3" component="p" className="amount positive">
-            +€{ingresosTotal.toFixed(2)}
+            {ingresosTotal.toFixed(2)}€
           </Typography>
         </Box>
         <Box className="summary-card gastos">
@@ -272,7 +377,7 @@ export const Meses: React.FC = () => {
             {t("meses.totalExpense")}
           </Typography>
           <Typography variant="h3" component="p" className="amount negative">
-            -€{gastosTotal.toFixed(2)}
+            {gastosTotal.toFixed(2)}€
           </Typography>
         </Box>
       </Box>

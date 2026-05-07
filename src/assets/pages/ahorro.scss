@@ -2,30 +2,7 @@
 
 /* src/assets/pages/ahorro.scss */
 
-/* Define Pastel Palette Variables */
-:root {
-  --bg-color: #faf9f6; /* Off-white pastel */
-  --text-dark: #4a4a4a;
-  --text-muted: #8c8c8c;
-  
-  --card-bg: #ffffff;
-  --card-border: #f0eef5;
-  --card-shadow: rgba(142, 133, 165, 0.08);
 
-  --pastel-blue-light: #e6f0fa;
-  --pastel-blue-dark: #a8cbf0;
-  --pastel-blue-text: #4b88d1;
-
-  --pastel-green-light: #eaf5eb;
-  --pastel-green-dark: #b8e0bc;
-  --pastel-green-text: #50a359;
-
-  --pastel-red-light: #fae6e6;
-  --pastel-red-dark: #f0b9b9;
-  --pastel-red-text: #d95b5b;
-
-  --btn-shadow: rgba(0, 0, 0, 0.04);
-}
 
 body {
   background-color: var(--bg-color);
@@ -123,6 +100,15 @@ body {
       }
       
       &.balance h3 {
+        color: var(--pastel-blue-text);
+      }
+      &.caja h3 {
+        color: var(--pastel-green-text);
+      }
+      &.fondo-emergencia h3 {
+        color: var(--pastel-red-text);
+      }
+      &.viajes h3 {
         color: var(--pastel-blue-text);
       }
     }
