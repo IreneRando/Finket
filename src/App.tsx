@@ -6,10 +6,11 @@ import Viajes from "./pages/Viajes";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import { supabase } from "./supabaseClient";
+import type { Session } from "@supabase/supabase-js";
 import "./App.css";
 
 function App() {
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

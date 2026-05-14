@@ -35,14 +35,27 @@ import {
 import "../assets/pages/meses.scss";
 
 const initialRawData = [
-  { key: "nomina", value: 0, color: "#10b981", categoryId: 1 },
-  { key: "iphone", value: 0, color: "#6366f1", categoryId: 2 },
-  { key: "comida", value: 0, color: "#0ea5e9", categoryId: 3 },
-  { key: "ocio", value: 0, color: "#f59e0b", categoryId: 4 },
-  { key: "transporte", value: 0, color: "#1201aaff", categoryId: 5 },
-  { key: "caprichos", value: 0, color: "#ec4899", categoryId: 6 },
-  { key: "gastos", value: 0, color: "#f43f5e", categoryId: 7 },
+  { key: "nomina", value: 0, color: "#10b981", categoryId: 1, type: 'ingreso' },
+  { key: "iphone", value: 0, color: "#6366f1", categoryId: 2, type: 'gasto' },
+  { key: "comida", value: 0, color: "#0ea5e9", categoryId: 3, type: 'gasto' },
+  { key: "ocio", value: 0, color: "#f59e0b", categoryId: 4, type: 'gasto' },
+  { key: "transporte", value: 0, color: "#1201aaff", categoryId: 5, type: 'gasto' },
+  { key: "caprichos", value: 0, color: "#ec4899", categoryId: 6, type: 'gasto' },
+  { key: "gastos", value: 0, color: "#f43f5e", categoryId: 7, type: 'gasto' },
 ];
+
+interface Transaction {
+  id: string;
+  monto: string | number;
+  descripcion: string | null;
+  fecha: string;
+  categoria_id: number;
+  banco: string;
+  categorias: {
+    nombre: string;
+    tipo: string;
+  };
+}
 
 export const Meses: React.FC = () => {
   const { t } = useTranslation();
@@ -57,10 +70,13 @@ export const Meses: React.FC = () => {
   );
 
   // Generamos los años (desde el año actual bajando hasta 2026)
-  const startYear = 2026;
-  const numYears = Math.max(1, currentYear - startYear + 1);
-  const years = Array.from(new Array(numYears), (_, index) => currentYear - index);
-  const months = Array.from(new Array(12), (_, index) => index + 1);
+  const years = React.useMemo(() => {
+    const startYear = 2026;
+    const numYears = Math.max(1, currentYear - startYear + 1);
+    return Array.from(new Array(numYears), (_, index) => currentYear - index);
+  }, [currentYear]);
+
+  const months = React.useMemo(() => Array.from(new Array(12), (_, index) => index + 1), []);
 
   // Estados modales
   const [openIncomeModal, setOpenIncomeModal] = useState(false);
@@ -73,10 +89,59 @@ export const Meses: React.FC = () => {
   const [description, setDescription] = useState("");
 
   const [chartData, setChartData] = useState(initialRawData);
-  const [monthTransactions, setMonthTransactions] = useState<any[]>([]);
+  const [monthTransactions, setMonthTransactions] = useState<Transaction[]>([]);
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const year = years[selectedYearIndex];
+      const month = months[selectedMonthIndex];
+      const lastDay = new Date(year, month, 0).getDate();
+      const start = `${year}-${String(month).padStart(2, "0")}-01`;
+      const end = `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from('movimientos')
+        .select('monto, categoria_id')
+        .gte('fecha', start)
+        .lte('fecha', end)
+        .eq('usuario_id', user?.id || '');
+
+      if (!error) {
+        const newData = initialRawData.map(item => ({ ...item, value: 0 }));
+        if (data) {
+          data.forEach(mov => {
+            const item = newData.find(d => d.categoryId === mov.categoria_id);
+            if (item) {
+              item.value += parseFloat(mov.monto);
+            }
+          });
+        }
+        setChartData(newData);
+      }
+
+      // Fetch detailed transactions for the month
+      const { data: detailed, error: detailedError } = await supabase
+        .from("movimientos")
+        .select("id, monto, descripcion, fecha, categoria_id, banco, categorias!inner(nombre, tipo)")
+        .gte('fecha', start)
+        .lte('fecha', end)
+        .eq("usuario_id", user?.id || '')
+        .order("fecha", { ascending: false })
+        .order("creado_at", { ascending: false });
+
+      if (detailed && !detailedError) {
+        setMonthTransactions(detailed as unknown as Transaction[]);
+      }
+    };
+
+    fetchData();
+  }, [selectedYearIndex, selectedMonthIndex, years, months]);
+
   const fetchMovimientos = async () => {
+    // This is now used for manual refreshes after mutations
     const year = years[selectedYearIndex];
     const month = months[selectedMonthIndex];
     const lastDay = new Date(year, month, 0).getDate();
@@ -85,58 +150,39 @@ export const Meses: React.FC = () => {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('movimientos')
       .select('monto, categoria_id')
       .gte('fecha', start)
-      .lte('fecha', end);
+      .lte('fecha', end)
+      .eq('usuario_id', user?.id || '');
 
-    if (user) {
-      query = query.eq('usuario_id', user.id);
+    if (!error) {
+      const newData = initialRawData.map(item => ({ ...item, value: 0 }));
+      if (data) {
+        data.forEach(mov => {
+          const item = newData.find(d => d.categoryId === mov.categoria_id);
+          if (item) {
+            item.value += parseFloat(mov.monto);
+          }
+        });
+      }
+      setChartData(newData);
     }
 
-    const { data, error } = await query;
-
-    if (error) {
-      console.error("Error fetching movimientos:", error);
-      return;
-    }
-
-    const newData = initialRawData.map(item => ({ ...item, value: 0 }));
-    if (data) {
-      data.forEach(mov => {
-        const item = newData.find(d => d.categoryId === mov.categoria_id);
-        if (item) {
-          item.value += parseFloat(mov.monto);
-        }
-      });
-    }
-    setChartData(newData);
-
-    // Fetch detailed transactions for the month
-    let detailedQuery = supabase
+    const { data: detailed, error: detailedError } = await supabase
       .from("movimientos")
-      .select("id, monto, descripcion, fecha, categorias!inner(nombre, tipo)")
+      .select("id, monto, descripcion, fecha, categoria_id, banco, categorias!inner(nombre, tipo)")
       .gte('fecha', start)
       .lte('fecha', end)
+      .eq("usuario_id", user?.id || '')
       .order("fecha", { ascending: false })
       .order("creado_at", { ascending: false });
 
-    if (user) {
-      detailedQuery = detailedQuery.eq("usuario_id", user.id);
-    }
-
-    const { data: detailed, error: detailedError } = await detailedQuery;
-    if (detailedError) {
-      console.error("Error fetching detailed txs:", detailedError);
-    } else if (detailed) {
-      setMonthTransactions(detailed);
+    if (detailed && !detailedError) {
+      setMonthTransactions(detailed as unknown as Transaction[]);
     }
   };
-
-  useEffect(() => {
-    fetchMovimientos();
-  }, [selectedYearIndex, selectedMonthIndex]);
 
   const data = chartData.map((item) => ({
     ...item,
@@ -148,17 +194,17 @@ export const Meses: React.FC = () => {
     .filter((d) => d.key !== "nomina")
     .reduce((acc, curr) => acc + curr.value, 0);
   
-  const ingresosTotal = totalNominas - gastosTotal;
+  const ingresosTotal = totalNominas;
 
   const handleYearTabChange = (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     newValue: number,
   ) => {
     setSelectedYearIndex(newValue);
   };
 
   const handleMonthTabChange = (
-    event: React.SyntheticEvent,
+    _event: React.SyntheticEvent,
     newValue: number,
   ) => {
     setSelectedMonthIndex(newValue);
@@ -178,7 +224,7 @@ export const Meses: React.FC = () => {
     resetForm();
   };
 
-  const handleEdit = (tx: any) => {
+  const handleEdit = (tx: Transaction) => {
     setEditingTransactionId(tx.id);
     setAmount(tx.monto.toString());
     setDescription(tx.descripcion || "");
@@ -365,21 +411,14 @@ export const Meses: React.FC = () => {
                 setCategory(e.target.value as string)
               }
             >
-              {openIncomeModal && (
-                <MenuItem value="nomina">{t("meses.categories.nomina")}</MenuItem>
-              )}
-              {openExpenseModal && [
-                <MenuItem key="gastos" value="gastos">{t("meses.categories.gastos")}</MenuItem>,
-                <MenuItem key="iphone" value="iphone">{t("meses.categories.iphone")}</MenuItem>,
-                <MenuItem key="ocio" value="ocio">{t("meses.categories.ocio")}</MenuItem>,
-                <MenuItem key="comida" value="comida">{t("meses.categories.comida")}</MenuItem>,
-                <MenuItem key="transporte" value="transporte">
-                  {t("meses.categories.transporte")}
-                </MenuItem>,
-                <MenuItem key="caprichos" value="caprichos">
-                  {t("meses.categories.caprichos")}
-                </MenuItem>,
-              ]}
+              {initialRawData
+                .filter(cat => (openIncomeModal ? cat.type === 'ingreso' : cat.type === 'gasto'))
+                .map(cat => (
+                  <MenuItem key={cat.key} value={cat.key}>
+                    {t(`meses.categories.${cat.key}`)}
+                  </MenuItem>
+                ))
+              }
             </Select>
           </FormControl>
           
@@ -528,7 +567,7 @@ export const Meses: React.FC = () => {
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Typography variant="h6" fontWeight="700" sx={{ color: tx.categorias.tipo === "ingreso" ? "var(--pastel-green-text)" : "var(--pastel-red-text)" }}>
-                      {tx.categorias.tipo === "ingreso" ? "+" : "-"}€{parseFloat(tx.monto).toFixed(2)}
+                      {tx.categorias.tipo === "ingreso" ? "+" : "-"}€{parseFloat(String(tx.monto)).toFixed(2)}
                     </Typography>
                   </Box>
                 </Box>

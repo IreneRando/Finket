@@ -10,8 +10,16 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 
 export const Ahorro: React.FC = () => {
   const { t } = useTranslation();
-  const [balance, setBalance] = useState(0);
-  const [caja, setCaja] = useState(0);
+  const [balance, setBalance] = useState<number>(0);
+  const [caja, setCaja] = useState<number>(0);
+
+  interface MovimientoAhorro {
+    monto: string | number;
+    banco: string;
+    categorias: {
+      tipo: string;
+    };
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,9 +44,9 @@ export const Ahorro: React.FC = () => {
       if (movs && !movsError) {
         let calcBalance = 0;
         let calcCaja = 0;
-        movs.forEach((m: any) => {
+        (movs as unknown as MovimientoAhorro[]).forEach((m) => {
           const isIngreso = m.categorias.tipo === "ingreso";
-          const amount = parseFloat(m.monto);
+          const amount = typeof m.monto === "string" ? parseFloat(m.monto) : m.monto;
 
           if (isIngreso) calcBalance += amount;
           else calcBalance -= amount;
@@ -64,9 +72,6 @@ export const Ahorro: React.FC = () => {
       <Box component="header" className="ahorro-header">
         <Typography variant="h3" component="h1" fontWeight="800">
           {t("ahorro.title")}
-        </Typography>
-        <Typography variant="subtitle1" component="p" color="text.secondary">
-          {t("ahorro.subtitle")}
         </Typography>
       </Box>
 

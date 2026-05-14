@@ -6,8 +6,7 @@
   },
   "ahorro": {
     "title": "Control de Ahorro",
-    "subtitle": "Gestiona y visualiza el estado actual de tus finanzas",
-    "totalBalance": "Balance Total",
+    "totalBalance": "Ahorro Total",
     "caja": "Caja",
     "emergencyFund": "Fondo de Emergencia",
     "trips": "Viajes",

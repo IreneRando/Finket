@@ -6,8 +6,7 @@
   },
   "ahorro": {
     "title": "Savings Tracker",
-    "subtitle": "Manage and visualize the current state of your finances",
-    "totalBalance": "Total Balance",
+    "totalBalance": "Total Saving",
     "caja": "Cash Fund",
     "emergencyFund": "Emergency Fund",
     "trips": "Trips",
